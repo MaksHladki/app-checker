@@ -1,20 +1,6 @@
 
-(function (root, factory) {
-    if (typeof define === 'function' && define.amd) {
-        define("appChecker", factory(root));
-    } else if (typeof exports === 'object') {
-        module.exports = factory(root);
-    } else {
-        root["appChecker"] = factory(root);
-    }
-})(window || this, function (root) {
-
+;function AppChecker(options) {
     "use strict";
-
-    if (!root.document || !root.navigator) {
-        return;
-    }
-
     var timeout = null;
 
     var defaults = {
@@ -23,9 +9,11 @@
         delay: 1000,
         delta: 500,
         drawModal: drawModal
-    }
+    };
 
-    var extend = function (defaults, options) {
+    var settings = setOptions(defaults, options);
+
+    function setOptions(defaults, options) {
         var extended = {};
         for (var key in defaults) {
             extended[key] = defaults[key];
@@ -36,24 +24,21 @@
         return extended;
     };
 
-    var setup = function (options) {
-        settings = extend(defaults, options);
-    }
-
-    var isAndroid = function () {
+    function isAndroid() {
         return navigator.userAgent.match('Android');
     }
 
-    var isIOS = function () {
+    function isIOS() {
+        return true;
         return navigator.userAgent.match(/iPad|iPhone|iPod/);
     }
 
-    var isMobile = function () {
+    function isMobile() {
         return isAndroid() || isIOS();
     }
 
     //get uri schema
-    var getUri = function () {
+    function getUri() {
         if (isAndroid()) {
 
             var uri = settings.Android.uri;
@@ -68,23 +53,22 @@
         return settings.IOS.uri;
     }
 
-    var getStoreUrlIOS = function () {
+    function getStoreUrlIOS() {
         var baseUrl = "itms-apps://itunes.apple.com/app/";
         var name = settings.IOS.appName;
         var id = settings.IOS.appId;
         return (id && name) ? (baseUrl + name + "/id" + id + "?mt=8") : null;
     }
 
-    var getStoreURLAndroid = function () {
+    function getStoreURLAndroid() {
         var baseurl = "market://details?id=";
         var id = settings.Android.appId;
         return id ? (baseurl + id) : null;
     }
 
-    var getStoreLink = function () {
+    function getStoreLink() {
         if (isAndroid())
             return getStoreURLAndroid();
-
         return getStoreUrlIOS();
     }
 
@@ -108,7 +92,7 @@
                 window.clearTimeout(timeoutTrigger);
                 onSuccess(data);
             };
-
+            debugger;
             var script = document.createElement('script');
             script.type = 'text/javascript';
             script.async = true;
@@ -121,7 +105,7 @@
     })();
 
     //create modal
-    var drawModal = function (app) {
+    function drawModal(app) {
         var rating = '';
         debugger;
         for (var i = 1; i <= 5; i++)
@@ -166,7 +150,7 @@
     }
 
     //set data to modal window
-    var setData = function (data) {
+    function setData(data) {
         var app = {};
 
         if (isAndroid()) {
@@ -189,7 +173,8 @@
     }
 
     //get ios app data using jsonp
-    var getAppInfoIOS = function () {
+    function getAppInfoIOS() {
+        debugger;
         var baseUrl = 'https://itunes.apple.com/lookup';
         var callback = 'appCheckerCallback';
         var id = settings.IOS.appId;
@@ -207,15 +192,11 @@
         });
     }
 
-
-    var openModal = function (callTime) {
-
+    function openModal(callTime) {
         var wait = settings.delay + settings.delta;
 
-        if (Date.now() - callTime >= wait) {
-            // iframe.onload not fired
-            return;
-        }
+        // iframe.onload not fired
+        if (Date.now() - callTime >= wait) return;
 
         if (isAndroid()) {
             var data = settings.Android.info;
@@ -236,20 +217,19 @@
 
     }
 
-    var isOpera = function () {
+    function isOpera() {
         return !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
     }
 
-    var isFirefox = function () {
+    function isFirefox() {
         return typeof InstallTrigger !== 'undefined';
     }
 
     var run = function () {
-        if (!isMobile()) {
-            return;
-        }
 
-        //check? if schema doesn't use, show modal or redirect to store
+        if (!isMobile()) return;
+        debugger;
+        //if schema doesn't use, show modal or redirect to store
         timeout = setTimeout(openModal, settings.delay, Date.now());
 
         var iframe = document.createElement("iframe");
@@ -273,12 +253,7 @@
         iframe.src = getUri();
     }
 
+    return run();
+};
 
-    // Public API
-    return {
-        setup: setup,
-        run: run
-    };
-});
-
-function appCheckerCallback() { }
+function appCheckerCallback() { };
