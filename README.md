@@ -25,7 +25,7 @@ deep link mobile (ios, android)
         };
 
 
-        window.onload = function () {
-            new AppChecker(settings);
-        }
+ window.onload = function () {
+     new AppChecker(settings);
+ }
         ```
