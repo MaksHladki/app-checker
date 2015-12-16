@@ -21,13 +21,11 @@ deep link mobile (ios, android)
                     price: 'Free',
                     company: 'Facebook, Inc.'
                 }
-            },
-            //drawModal: null
+            }
         };
 
-        appChecker.setup(settings);
 
         window.onload = function () {
-            appChecker.run();
+            new AppChecker(settings);
         }
         ```
